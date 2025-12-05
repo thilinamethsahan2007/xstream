@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+:root {
+  /* Apple Semantic System Colors (Dark Mode) */
+  --system-background: #000000;
+  --system-grouped-background: #000000;
+  /* In dark mode, grouped is often black */
+  --system-secondary-grouped-background: #1c1c1e;
+  --system-tertiary-grouped-background: #2c2c2e;
+
+  /* Tint Colors */
+  --system-blue: #0a84ff;
+  --system-red: #ff453a;
+  --system-green: #30d158;
+  --system-orange: #ff9f0a;
+
+  /* Label Colors */
+  --label-primary: #ffffff;
+  --label-secondary: #86868b;
+  --label-tertiary: #48484a;
+  --label-quaternary: #3a3a3c;
+
+  /* Separators */
+  --separator: rgba(84, 84, 88, 0.65);
+  --separator-opaque: #38383a;
+
+  /* Materials (Glass) Variables */
+  /* Using values that mimic UIVisualEffectView in Dark Mode */
+  --material-ultra-thin-bg: rgba(30, 30, 30, 0.35);
+  --material-thin-bg: rgba(30, 30, 30, 0.45);
+  --material-regular-bg: rgba(30, 30, 30, 0.60);
+  --material-thick-bg: rgba(30, 30, 30, 0.85);
+
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: var(--system-background);
+  color: var(--label-primary);
+  overflow-x: hidden;
+}
+
+/* Apple Material System (Liquid Glass) */
+/* Simulates UIVisualEffectView with blur + saturation boost (Vibrancy) */
+
+.material-ultra-thin {
+  background-color: var(--material-ultra-thin-bg);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border-bottom: 0.5px solid var(--glass-border);
+}
+
+.material-thin {
+  background-color: var(--material-thin-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid var(--glass-border);
+}
+
+.material-regular {
+  background-color: var(--material-regular-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 0.5px solid var(--glass-border);
+}
+
+.material-thick {
+  background-color: var(--material-thick-bg);
+  backdrop-filter: blur(50px) saturate(180%);
+  -webkit-backdrop-filter: blur(50px) saturate(180%);
+  border: 0.5px solid var(--glass-border);
+}
+
+/* Typography Utilities */
+.text-large-title {
+  font-size: 34px;
+  line-height: 41px;
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  /* SF Pro Display tracking */
+}
+
+.text-title-1 {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+  letter-spacing: 0.36px;
+}
+
+.text-title-2 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: 0.35px;
+}
+
+.text-title-3 {
+  font-size: 20px;
+  line-height: 25px;
+  font-weight: 600;
+  letter-spacing: 0.38px;
+}
+
+.text-headline {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: -0.41px;
+}
+
+.text-body {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 400;
+  letter-spacing: -0.41px;
+}
+
+.text-callout {
+  font-size: 16px;
+  line-height: 21px;
+  font-weight: 400;
+  letter-spacing: -0.32px;
+}
+
+.text-subheadline {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: -0.24px;
+}
+
+.text-footnote {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: -0.08px;
+}
+
+.text-caption-1 {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.text-caption-2 {
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 400;
+  letter-spacing: 0.07px;
+}
+
+/* Utilities */
+.glass {
+  /* Legacy support, mapping to material-regular */
+  background-color: var(--material-regular-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-bottom: 0.5px solid var(--glass-border);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--label-primary), var(--label-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
