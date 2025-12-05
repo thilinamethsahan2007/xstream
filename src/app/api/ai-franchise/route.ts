@@ -28,8 +28,19 @@ export async function POST(req: Request) {
         CRITICAL: Order them chronologically based on the IN-UNIVERSE timeline (not release date).
         Use IMDb lists or official franchise timelines as your source of truth for the correct chronological order.
         
-        Return ONLY a valid JSON array of strings, where each string is the exact title of the movie or TV show.
-        Example: ["Star Wars: Episode I - The Phantom Menace", "Star Wars: Episode II - Attack of the Clones", ...]
+        Return ONLY a valid JSON array of objects with the following structure:
+        {
+            "title": "Exact Title",
+            "year": 1999,
+            "type": "movie" | "tv"
+        }
+
+        Example: 
+        [
+            { "title": "Star Wars: Episode I - The Phantom Menace", "year": 1999, "type": "movie" },
+            { "title": "Star Wars: The Clone Wars", "year": 2008, "type": "tv" }
+        ]
+        
         Do not include any other text or markdown formatting.
         `;
 
@@ -40,61 +51,71 @@ export async function POST(req: Request) {
         // Clean up the response to ensure valid JSON
         const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        let titles: string[] = [];
+        let items: { title: string, year: number, type: 'movie' | 'tv' }[] = [];
         try {
-            titles = JSON.parse(cleanedText);
+            items = JSON.parse(cleanedText);
         } catch (e) {
             console.error('Failed to parse Gemini response:', text);
             return NextResponse.json({ error: 'Failed to curate franchise' }, { status: 500 });
         }
 
         // Search TMDB for each title to get metadata
-        const contentPromises = titles.map(async (title) => {
+        const contentPromises = items.map(async (item) => {
             try {
-                // Search for movie first
-                const movieSearch = await tmdb.search.movies({ query: title });
-                if (movieSearch.results.length > 0) {
-                    const m = movieSearch.results[0];
-                    return {
-                        id: m.id,
-                        title: m.title,
-                        poster_path: m.poster_path,
-                        backdrop_path: m.backdrop_path,
-                        release_date: m.release_date,
-                        media_type: 'movie',
-                        overview: m.overview
-                    };
-                }
+                // Determine search type
+                if (item.type === 'movie') {
+                    const movieSearch = await tmdb.search.movies({ query: item.title, year: item.year });
+                    // Fallback to purely title search if specific year fails, but try to match close years
+                    const results = movieSearch.results.length > 0 ? movieSearch.results : (await tmdb.search.movies({ query: item.title })).results;
 
-                // If not found, search for TV show
-                const tvSearch = await tmdb.search.tvShows({ query: title });
-                if (tvSearch.results.length > 0) {
-                    const t = tvSearch.results[0];
+                    if (results.length > 0) {
+                        // Find best match: check exact year match first if available
+                        const match = results.find(m => m.release_date?.startsWith(item.year.toString())) || results[0];
 
-                    // Fetch details to get season/episode counts
-                    let details: any = {};
-                    try {
-                        details = await tmdb.tvShows.details(t.id);
-                    } catch (err) {
-                        console.error(`Failed to fetch TV details for ${t.name}`, err);
+                        return {
+                            id: match.id,
+                            title: match.title,
+                            poster_path: match.poster_path,
+                            backdrop_path: match.backdrop_path,
+                            release_date: match.release_date,
+                            media_type: 'movie',
+                            overview: match.overview
+                        };
                     }
+                } else {
+                    const tvSearch = await tmdb.search.tvShows({ query: item.title, first_air_date_year: item.year });
+                    // Fallback to purely title search
+                    const results = tvSearch.results.length > 0 ? tvSearch.results : (await tmdb.search.tvShows({ query: item.title })).results;
 
-                    return {
-                        id: t.id,
-                        title: t.name,
-                        poster_path: t.poster_path,
-                        backdrop_path: t.backdrop_path,
-                        release_date: t.first_air_date,
-                        media_type: 'tv',
-                        overview: t.overview,
-                        number_of_seasons: details.number_of_seasons,
-                        number_of_episodes: details.number_of_episodes
-                    };
+                    if (results.length > 0) {
+                        // Find best match
+                        const match = results.find(t => t.first_air_date?.startsWith(item.year.toString())) || results[0];
+
+                        // Fetch details to get season/episode counts
+                        let details: any = {};
+                        try {
+                            details = await tmdb.tvShows.details(match.id);
+                        } catch (err) {
+                            console.error(`Failed to fetch TV details for ${match.name}`, err);
+                        }
+
+                        return {
+                            id: match.id,
+                            title: match.name,
+                            poster_path: match.poster_path,
+                            backdrop_path: match.backdrop_path,
+                            release_date: match.first_air_date,
+                            media_type: 'tv',
+                            overview: match.overview,
+                            number_of_seasons: details.number_of_seasons,
+                            number_of_episodes: details.number_of_episodes
+                        };
+                    }
                 }
 
                 return null;
             } catch (e) {
-                console.error(`Failed to fetch metadata for "${title}":`, e);
+                console.error(`Failed to fetch metadata for "${item.title}":`, e);
                 return null;
             }
         });

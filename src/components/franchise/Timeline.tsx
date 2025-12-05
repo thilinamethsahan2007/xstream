@@ -7,16 +7,56 @@ interface TimelineProps {
     content: FranchiseContent[];
 }
 
+import { useState, useMemo } from 'react';
+import { ArrowDownAZ, Calendar } from 'lucide-react';
+
 export default function Timeline({ content }: TimelineProps) {
     const openModal = useModalStore((state) => state.openModal);
+    const [sortMethod, setSortMethod] = useState<'chronological' | 'release'>('chronological');
+
+    const sortedContent = useMemo(() => {
+        if (sortMethod === 'chronological') return content;
+
+        return [...content].sort((a, b) => {
+            const dateA = new Date(a.release_date || '9999-01-01').getTime();
+            const dateB = new Date(b.release_date || '9999-01-01').getTime();
+            return dateA - dateB;
+        });
+    }, [content, sortMethod]);
 
     return (
         <div className="relative container mx-auto px-4 py-16">
+            {/* Sorting Controls */}
+            <div className="flex justify-center mb-16 relative z-20">
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-1.5 rounded-full flex gap-1">
+                    <button
+                        onClick={() => setSortMethod('chronological')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${sortMethod === 'chronological'
+                                ? 'bg-system-blue text-white shadow-lg shadow-system-blue/25'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                    >
+                        <ArrowDownAZ className="w-4 h-4" />
+                        In-Universe Order
+                    </button>
+                    <button
+                        onClick={() => setSortMethod('release')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${sortMethod === 'release'
+                                ? 'bg-system-blue text-white shadow-lg shadow-system-blue/25'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                    >
+                        <Calendar className="w-4 h-4" />
+                        Release Order
+                    </button>
+                </div>
+            </div>
+
             {/* Vertical Line with Gradient */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500/30 to-transparent -translate-x-1/2 md:translate-x-0" />
+            <div className="absolute left-4 md:left-1/2 top-32 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-blue-500/30 to-transparent -translate-x-1/2 md:translate-x-0" />
 
             <div className="space-y-16">
-                {content.map((item, index) => {
+                {sortedContent.map((item, index) => {
                     const isEven = index % 2 === 0;
                     return (
                         <motion.div
