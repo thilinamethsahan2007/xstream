@@ -52,6 +52,9 @@ export default function HeroBanner({ variant = 'home' }: HeroBannerProps) {
 
     // Handle video selection
     useEffect(() => {
+        // Don't play videos on mobile
+        if (typeof window !== 'undefined' && window.innerWidth < 768) return;
+
         const videos = isTV ? tvVideos : movieVideos;
         if (videos && videos.length > 0) {
             const trailer = videos.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube') || videos[0];
