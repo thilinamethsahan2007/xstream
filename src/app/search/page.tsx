@@ -11,9 +11,10 @@ import { Film, Send } from 'lucide-react';
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q') || '';
+    const initialTelegramMode = searchParams.get('telegram') === 'true';
     
     // Telegram Toggle State
-    const [isTelegramMode, setIsTelegramMode] = useState(false);
+    const [isTelegramMode, setIsTelegramMode] = useState(initialTelegramMode);
     
     // Pass the toggle state into our updated hook
     const { data: results, isLoading, error } = useSearchMovies(query, isTelegramMode);
