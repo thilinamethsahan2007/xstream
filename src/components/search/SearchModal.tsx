@@ -74,7 +74,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 vote_average: 10,
                 is_telegram: true,
                 channel_id: item.channel_id,
-                message_id: item.message_id
+                message_id: item.message_id,
+                raw_size: item.size,
+                mime_type: item.mime_type || 'video/mp4'
             }));
             setTelegramResults(mapped);
         } catch (err) {
