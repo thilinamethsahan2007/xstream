@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useWatchHistory } from '@/hooks/useWatchHistory';
+import TelegramPlayer from './TelegramPlayer';
 
 interface CustomPlayerProps {
     tmdbId: string;
@@ -71,20 +72,9 @@ export default function CustomPlayer({
         };
     }, [type]);
 
-    // RENDER NATIVE HTML5 VIDEO FOR TELEGRAM STREAMS
+    // RENDER CUSTOM PLAYER FOR TELEGRAM STREAMS
     if (type === 'telegram') {
-        return (
-            <div className="relative w-full h-full bg-black flex items-center justify-center">
-                <video
-                    src={fallbackUrl}
-                    controls
-                    autoPlay
-                    className="w-full h-[95vh] rounded-xl shadow-2xl object-contain outline-none border border-white/5"
-                    controlsList="nodownload"
-                    crossOrigin="anonymous"
-                />
-            </div>
-        );
+        return <TelegramPlayer src={fallbackUrl} title={title} />;
     }
 
     // RENDER IFRAME FOR TMDB
