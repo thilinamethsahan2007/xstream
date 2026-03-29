@@ -3,15 +3,14 @@ import { tmdb } from '@/lib/tmdb';
 
 export const useSearchMovies = (query: string, isTelegramMode: boolean = false) => {
     return useQuery({
-        // Add the toggle state to queryKey so React Query re-fetches cleanly when toggled!
         queryKey: ['search', query, isTelegramMode],
         queryFn: async () => {
             if (!query) return [];
 
-            // 1. TELEGRAM SEARCH BYPASS
+            // 1. TELEGRAM SEARCH
             if (isTelegramMode) {
                 try {
-                    const res = await fetch(`http://79.72.89.197:8000/search?query=${encodeURIComponent(query)}`);
+                    const res = await fetch(`/api/telegram/search?query=${encodeURIComponent(query)}`);
                     if (!res.ok) throw new Error('Telegram API failed');
                     
                     const data = await res.json();
@@ -20,7 +19,7 @@ export const useSearchMovies = (query: string, isTelegramMode: boolean = false) 
                         id: item.message_id,
                         title: item.file_name,
                         media_type: 'telegram',
-                        release_date: new Date().toISOString().split('T')[0], // Give it a date for Next.js sorting
+                        release_date: new Date().toISOString().split('T')[0],
                         poster_path: null,
                         backdrop_path: null,
                         overview: `${(item.size / 1024 / 1024).toFixed(1)} MB | Channel: ${item.channel_id}`,
