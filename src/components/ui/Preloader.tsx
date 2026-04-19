@@ -8,128 +8,106 @@ interface PreloaderProps {
 }
 
 export default function Preloader({ onComplete }: PreloaderProps) {
-    const [phase, setPhase] = useState<'start' | 'stripes' | 'logo' | 'fade'>('start');
+    const [phase, setPhase] = useState<'draw' | 'fill' | 'fadeOut'>('draw');
 
     useEffect(() => {
-        const timer1 = setTimeout(() => setPhase('stripes'), 100);
-        const timer2 = setTimeout(() => setPhase('logo'), 1800);
-        const timer3 = setTimeout(() => setPhase('fade'), 3200);
-        const timer4 = setTimeout(() => onComplete(), 3700);
+        // Outline draws as a single continuous line for 2s. We wait until 2.3s to fire flash.
+        const timer1 = setTimeout(() => setPhase('fill'), 2300); 
+        // Pause to appreciate the impact
+        const timer2 = setTimeout(() => setPhase('fadeOut'), 3500); 
+        // Complete and unmount
+        const timer3 = setTimeout(() => onComplete(), 4100);
 
         return () => {
             clearTimeout(timer1);
             clearTimeout(timer2);
             clearTimeout(timer3);
-            clearTimeout(timer4);
         };
     }, [onComplete]);
-
-    const stripes = [
-        { delay: 0, color: '#e50914' },
-        { delay: 0.05, color: '#ff1a1a' },
-        { delay: 0.1, color: '#cc0000' },
-        { delay: 0.15, color: '#e50914' },
-        { delay: 0.2, color: '#ff3333' },
-        { delay: 0.25, color: '#b30000' },
-        { delay: 0.3, color: '#e50914' },
-    ];
 
     return (
         <motion.div
             initial={{ opacity: 1 }}
-            animate={{ opacity: phase === 'fade' ? 0 : 1 }}
-            transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black overflow-hidden"
+            animate={{ opacity: phase === 'fadeOut' ? 0 : 1 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
+            // Pure black background
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black overflow-hidden"
         >
-            <div className="absolute inset-0 flex">
-                {stripes.map((stripe, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ scaleY: 0, opacity: 0 }}
-                        animate={
-                            phase === 'stripes' || phase === 'logo'
-                                ? { scaleY: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }
-                                : { scaleY: 0, opacity: 0 }
-                        }
-                        transition={{
-                            duration: 1.8,
-                            delay: stripe.delay,
-                            times: [0, 0.3, 0.7, 1],
-                            ease: [0.87, 0, 0.13, 1],
-                        }}
-                        className="flex-1 h-full"
-                        style={{
-                            backgroundColor: stripe.color,
-                            transformOrigin: 'center',
-                            boxShadow: `0 0 30px ${stripe.color}80`,
-                        }}
-                    />
-                ))}
-            </div>
-
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={
-                    phase === 'logo'
-                        ? { opacity: [0, 1, 1], scale: [0.8, 1, 1] }
-                        : phase === 'fade'
-                            ? { opacity: 0, scale: 1.1 }
-                            : { opacity: 0, scale: 0.8 }
-                }
-                transition={{
-                    duration: phase === 'logo' ? 0.6 : 0.5,
-                    ease: 'easeOut',
-                }}
-                className="relative z-20 px-4"
-            >
-                <h1
-                    className="text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] font-black text-[#e50914] tracking-tighter select-none"
-                    style={{
-                        textShadow: '0 0 40px rgba(229, 9, 20, 0.9), 0 0 80px rgba(229, 9, 20, 0.5)',
-                        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-                        WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.2)',
-                    }}
+            <div className="relative w-full max-w-[90vw] md:max-w-[700px] flex justify-center items-center">
+                
+                {/* SVG Text Layer for the single continuous laser drawing animation */}
+                <svg
+                    viewBox="0 0 800 200"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-full h-auto drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
                 >
-                    STREAMX
-                </h1>
+                    <defs>
+                        <linearGradient id="laser-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#ffffff" />
+                            <stop offset="50%" stopColor="#f0f0f0" />
+                            <stop offset="100%" stopColor="#cccccc" />
+                        </linearGradient>
+                    </defs>
 
+                    <motion.text
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontFamily='system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                        fontWeight="900"
+                        fontSize="100px"
+                        letterSpacing="15"
+                        stroke="url(#laser-gradient)"
+                        initial={{
+                            // Massive stroke dash to trace across all letters continuously
+                            strokeDasharray: "2500",
+                            strokeDashoffset: "2500",
+                            fill: "rgba(255, 255, 255, 0)",
+                            strokeWidth: "2"
+                        }}
+                        animate={{
+                            strokeDashoffset: "0",
+                            // Fill triggers purely at phase 'fill'
+                            fill: phase === 'fill' ? "#ffffff" : "rgba(255, 255, 255, 0)",
+                            strokeWidth: phase === 'fill' ? "0" : "2"
+                        }}
+                        transition={{
+                            // The single continuous trace
+                            strokeDashoffset: { duration: 2, ease: "easeInOut" },
+                            fill: { duration: 0.3, ease: "easeOut" },
+                            strokeWidth: { duration: 0.3 }
+                        }}
+                    >
+                        STREAMX
+                    </motion.text>
+                </svg>
+
+                {/* Laser Flash overlay: expands and vanishes when color fills */}
                 <motion.div
-                    initial={{ opacity: 0 }}
+                    initial={{ opacity: 0, scaleY: 0, scaleX: 0 }}
                     animate={
-                        phase === 'logo'
-                            ? { opacity: [0, 0.5, 0.3], scale: [0.5, 1.2, 1.5] }
+                        phase === 'fill'
+                            ? { opacity: [0, 1, 0], scaleY: [0, 4, 0], scaleX: [0.8, 1.2, 1.4] }
                             : { opacity: 0 }
                     }
-                    transition={{ duration: 1.4, ease: 'easeOut' }}
-                    className="absolute inset-0 bg-[#e50914] blur-[40px] md:blur-[80px] -z-10"
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="absolute top-[48%] left-10 right-10 h-[2px] bg-white -translate-y-1/2 blur-[6px] pointer-events-none mix-blend-screen"
                 />
-            </motion.div>
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={phase === 'logo' ? { opacity: [0, 0.4, 0] } : { opacity: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="absolute inset-0 bg-white pointer-events-none mix-blend-screen"
-            />
-
-            <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={
-                    phase === 'logo'
-                        ? { scale: [0, 2, 2.5], opacity: [0, 0.2, 0] }
-                        : { scale: 0, opacity: 0 }
-                }
-                transition={{ duration: 1.4, ease: 'easeOut' }}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            >
-                <div
-                    className="w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] md:w-[800px] md:h-[800px] lg:w-[1000px] lg:h-[1000px] rounded-full border-[3px] sm:border-[4px] md:border-[6px]"
-                    style={{
-                        borderColor: '#e50914',
-                        boxShadow: '0 0 60px rgba(229, 9, 20, 0.6)',
-                    }}
+                {/* Intense glowing white orb behind the text during the fill flash */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={
+                        phase === 'fill'
+                            ? { opacity: [0, 0.25, 0], scale: [0.8, 1.2, 1.5] }
+                            : { opacity: 0 }
+                    }
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="absolute top-1/2 left-1/2 w-full max-w-[500px] h-[150px] -translate-x-1/2 -translate-y-1/2 bg-white blur-[80px] rounded-[100%] pointer-events-none -z-10 mix-blend-screen"
                 />
-            </motion.div>
+            </div>
         </motion.div>
     );
 }
