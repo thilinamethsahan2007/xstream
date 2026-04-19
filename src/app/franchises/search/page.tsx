@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Timeline from '@/components/franchise/Timeline';
 import MovieModal from '@/components/modal/MovieModal';
@@ -11,7 +11,7 @@ import { useFranchiseStore } from '@/store/franchiseStore';
 import { supabase } from '@/lib/supabase';
 import { RefreshCw } from 'lucide-react';
 
-export default function FranchiseSearchPage() {
+function FranchiseSearchContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const [content, setContent] = useState<FranchiseContent[]>([]);
@@ -99,9 +99,7 @@ export default function FranchiseSearchPage() {
     };
 
     return (
-        <main className="min-h-screen bg-transparent">
-            <Navbar />
-
+        <>
             <div className="pt-24 pb-12 container mx-auto px-4 md:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
                     <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter">
@@ -145,6 +143,21 @@ export default function FranchiseSearchPage() {
             </div>
 
             <MovieModal />
+        </>
+    );
+}
+
+export default function FranchiseSearchPage() {
+    return (
+        <main className="min-h-screen bg-transparent">
+            <Navbar />
+            <Suspense fallback={
+                <div className="flex justify-center py-40">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600" />
+                </div>
+            }>
+                <FranchiseSearchContent />
+            </Suspense>
         </main>
     );
 }
