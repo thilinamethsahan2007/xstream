@@ -113,7 +113,7 @@ export default function CustomPlayer({
                 className="h-full w-full border-none"
                 allowFullScreen
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                referrerPolicy="origin"
+                referrerPolicy="no-referrer"
                 title="Video Player"
             />
         </div>
