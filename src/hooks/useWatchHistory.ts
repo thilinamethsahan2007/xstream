@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export interface WatchHistoryItem {
     id: number;
-    type: 'movie' | 'tv' | 'telegram';
+    type: 'movie' | 'tv';
     title: string;
     poster: string;
     timestamp: number;
@@ -54,12 +54,12 @@ export function useWatchHistory() {
     };
 
     // Get specific item progress
-    const getProgress = (id: number, type: 'movie' | 'tv' | 'telegram'): WatchHistoryItem | null => {
+    const getProgress = (id: number, type: 'movie' | 'tv'): WatchHistoryItem | null => {
         return history.find(h => h.id === id && h.type === type) || null;
     };
 
     // Remove item from history
-    const removeFromHistory = (id: number, type: 'movie' | 'tv' | 'telegram') => {
+    const removeFromHistory = (id: number, type: 'movie' | 'tv') => {
         setHistory(prev => {
             const filtered = prev.filter(h => !(h.id === id && h.type === type));
             localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));

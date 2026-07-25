@@ -34,9 +34,7 @@ export default function WatchPage() {
         episodeTitle?: string;
     } | null>(null);
 
-    const players = type === 'telegram'
-        ? [{ source: `/api/telegram/stream/${channelId}/${id}`, name: 'Direct Stream' }]
-        : type === 'movie'
+    const players = type === 'movie'
         ? getMoviePlayers(id)
         : getTvShowPlayers(id, parseInt(season), parseInt(episode));
 
@@ -45,15 +43,6 @@ export default function WatchPage() {
     // Fetch metadata for watch history
     useEffect(() => {
         const fetchMetadata = async () => {
-            if (type === 'telegram') {
-                setMetadata({
-                    title: `Sinhala Movie Stream`,
-                    poster: '',
-                });
-                setIsLoading(false);
-                return;
-            }
-
             try {
                 const endpoint = type === 'movie'
                     ? `https://api.themoviedb.org/3/movie/${id}`
@@ -113,12 +102,6 @@ export default function WatchPage() {
                         Season {season} • Episode {episode}
                     </span>
                 )}
-                {type === 'telegram' && (
-                    <span className="text-blue-400 text-sm font-bold tracking-wide flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                        Direct Video Stream
-                    </span>
-                )}
             </div>
 
             {/* Player Area */}
@@ -130,7 +113,7 @@ export default function WatchPage() {
                     fallbackUrl={player.source}
                     title={metadata?.title}
                     poster={metadata?.poster}
-                    type={type as 'movie' | 'tv' | 'telegram'}
+                    type={type as 'movie' | 'tv'}
                     episodeTitle={metadata?.episodeTitle}
                 />
             </div>

@@ -45,7 +45,6 @@ export default function Navbar() {
         { href: '/', label: 'Home' },
         { href: '/tv', label: 'TV Shows' },
         { href: '/movies', label: 'Movies' },
-        { href: '/sinhala-movies', label: 'Sinhala Movies' },
         { href: '/franchises', label: 'Franchises' },
     ];
 

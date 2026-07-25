@@ -119,11 +119,6 @@ export default function MovieModal() {
 
     const handlePlay = (season?: number, episode?: number) => {
         // Do not call closeModal() here to avoid race condition with router.push
-        if ((movie as any)?.is_telegram) {
-            router.push(`/watch/telegram/${movie?.id}?channel=${(movie as any).channel_id}`);
-            return;
-        }
-
         if (isTV && season && episode) {
             router.push(`/watch/tv/${movie?.id}?season=${season}&episode=${episode}`);
         } else if (isTV) {
