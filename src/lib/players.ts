@@ -11,7 +11,7 @@ export const getMoviePlayers = (id: string | number): PlayerProps[] => {
     return [
         {
             title: "VidSrc v3",
-            source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=true`,
+            source: `https://vidsrc-embed.ru/embed/movie/${id}?autoPlay=true`,
             recommended: true,
             fast: true,
         },
@@ -26,7 +26,7 @@ export const getTvShowPlayers = (
     return [
         {
             title: "VidSrc v3",
-            source: `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
+            source: `https://vidsrc-embed.ru/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
             recommended: true,
             fast: true,
         },
