@@ -51,7 +51,8 @@ export default function CustomPlayer({
         
         setPlayerUrl(url);
         setMounted(true);
-    }, [fallbackUrl, tmdbId, type, getProgress]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fallbackUrl, tmdbId, type]);
 
     // Handle VidSrc player events
     useEffect(() => {

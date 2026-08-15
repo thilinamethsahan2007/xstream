@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export interface WatchHistoryItem {
     id: number;
@@ -34,7 +34,7 @@ export function useWatchHistory() {
     // Removed redundant useEffect to fix compile error
 
     // Add or update item in history
-    const addToHistory = (item: WatchHistoryItem) => {
+    const addToHistory = useCallback((item: WatchHistoryItem) => {
         setHistory(prev => {
             // Remove existing item with same id and type
             const filtered = prev.filter(h => !(h.id === item.id && h.type === item.type));
@@ -51,12 +51,12 @@ export function useWatchHistory() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
             return updated;
         });
-    };
+    }, []);
 
     // Get specific item progress
-    const getProgress = (id: number, type: 'movie' | 'tv'): WatchHistoryItem | null => {
+    const getProgress = useCallback((id: number, type: 'movie' | 'tv'): WatchHistoryItem | null => {
         return history.find(h => h.id === id && h.type === type) || null;
-    };
+    }, [history]);
 
     // Remove item from history
     const removeFromHistory = (id: number, type: 'movie' | 'tv') => {
