@@ -10,16 +10,16 @@ export interface PlayerProps {
 export const getMoviePlayers = (id: string | number): PlayerProps[] => {
     return [
         {
-            title: "Vidking",
-            source: `https://www.vidking.net/embed/movie/${id}?color=0a84ff&autoPlay=true`,
-            recommended: true,
-            fast: true,
-            ads: false,
-        },
-        {
             title: "VidSrc v3",
             source: `https://vidsrc-embed.ru/embed/movie/${id}?autoPlay=true`,
+            recommended: true,
             fast: true,
+        },
+        {
+            title: "Vidking",
+            source: `https://www.vidking.net/embed/movie/${id}?color=0a84ff&autoPlay=true`,
+            fast: true,
+            ads: false,
         },
     ];
 };
@@ -31,16 +31,16 @@ export const getTvShowPlayers = (
 ): PlayerProps[] => {
     return [
         {
-            title: "Vidking",
-            source: `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=0a84ff&autoPlay=true&nextEpisode=true&episodeSelector=true`,
-            recommended: true,
-            fast: true,
-            ads: false,
-        },
-        {
             title: "VidSrc v3",
             source: `https://vidsrc-embed.ru/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
+            recommended: true,
             fast: true,
+        },
+        {
+            title: "Vidking",
+            source: `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=0a84ff&autoPlay=true&nextEpisode=true&episodeSelector=true`,
+            fast: true,
+            ads: false,
         },
     ];
 };
