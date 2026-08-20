@@ -28,15 +28,15 @@ function FranchiseSearchContent() {
         const { data } = await supabase
             .from('franchises')
             .select('*')
-            .eq('id', franchiseId)
-            .single();
+            .eq('id', franchiseId);
 
-        if (data) {
-            setLastUpdated(data.updated_at);
+        if (data && data.length > 0) {
+            const franchiseData = data[0];
+            setLastUpdated(franchiseData.updated_at);
 
             // If we have stored content, use it!
-            if (data.content && Array.isArray(data.content) && data.content.length > 0) {
-                setContent(data.content);
+            if (franchiseData.content && Array.isArray(franchiseData.content) && franchiseData.content.length > 0) {
+                setContent(franchiseData.content);
                 setLoading(false);
                 return true;
             }
@@ -69,8 +69,8 @@ function FranchiseSearchContent() {
             } else {
                 // Try to fetch timestamp from DB if we didn't just force refresh (e.g. initial load)
                 const franchiseId = `ai-${query!.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-                const { data: dbData } = await supabase.from('franchises').select('updated_at').eq('id', franchiseId).single();
-                if (dbData) setLastUpdated(dbData.updated_at);
+                const { data: dbData } = await supabase.from('franchises').select('updated_at').eq('id', franchiseId);
+                if (dbData && dbData.length > 0) setLastUpdated(dbData[0].updated_at);
             }
 
         } catch (err: any) {

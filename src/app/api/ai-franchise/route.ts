@@ -18,16 +18,15 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Gemini API Key is missing' }, { status: 500 });
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
         const prompt = `
-        You are a movie expert. Curate an EXHAUSTIVE and COMPLETE chronological timeline of movies and TV shows for the franchise: "${query}".
-        You MUST include EVERY SINGLE movie, TV series, special, and spin-off that is part of this franchise.
-        Do not miss any installments, even minor ones.
-        
-        CRITICAL: Order them chronologically based on the IN-UNIVERSE timeline (not release date).
-        Use IMDb lists or official franchise timelines as your source of truth for the correct chronological order.
-        
+        You are a movie and TV expert. The user has provided the following query: "${query}".
+
+        If the query is a recognized franchise (e.g., "Star Wars", "Shrek"), curate an EXHAUSTIVE and COMPLETE chronological timeline of EVERY SINGLE movie, TV series, special, and spin-off that is part of this franchise. Order them chronologically based on the IN-UNIVERSE timeline (not release date).
+
+        If the query is a thematic concept, watchlist, or genre (e.g., "Countdown to Doomsday Watchlist", "Best Cyberpunk movies"), curate a list of at least 15 highly relevant movies or TV shows that perfectly fit the query. Order them in a logical viewing order or by release date.
+
         Return ONLY a valid JSON array of objects with the following structure:
         {
             "title": "Exact Title",
@@ -141,8 +140,7 @@ export async function POST(req: Request) {
                     updated_at: new Date().toISOString(),
                     content: content
                 }, { onConflict: 'id' })
-                .select()
-                .single();
+                .select();
 
             if (dbError) {
                 // Ignore duplicate key error, just return content
